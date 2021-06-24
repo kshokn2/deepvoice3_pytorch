@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: deepvoice3-pytorch
+Version: 0.1.1+a5c2462
+Summary: PyTorch implementation of convolutional networks-based text-to-speech synthesis models.
+Home-page: UNKNOWN
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Provides-Extra: bin
+Provides-Extra: test
+Provides-Extra: jp
