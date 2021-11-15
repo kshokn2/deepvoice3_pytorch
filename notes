@@ -1,0 +1,79 @@
+son custom dataset 사용법
+
+1) recognition.json을 확보해야됨. 구글stt로 만든 것으로 안에 텍스트들은 다 검토가 필요함(현재 210511을 기준으로 NB10861230.0053.wav 까지 1차 완료
+
+2) recognition.json을 alignment.json으로 바꿔줘야됨.(cmd 1 사용) threshold를 1이 넘게줘야 정확하지 않는 대본의 텍스쳐로 강제 치환하지 않는다.
+
+3) deepvoice3를 학습하기 위한 mel~.npy와 spec~.npy 파일을 만들어야된다. 이것은 deepvoice3의 preprocess.py를 사용한다 json 포맷으로 데이터를 만드는 것은 cmd 2를 사용하면 된다.(alignment.json 필요!)
+
+3-1) 3번으로 생긴 data/new_son?/train.txt는 single speaker용이라 label이 없는데 cmd 2-1를 사용해서 label을 끝에 붙여주자(현재는 ./data/new_son/train.txt 를 읽어 4번 label을 붙여주게 되있음). 그다음에 cmd 4 로 multi speaker용 train.txt로 합쳐주자.
+
+4) 그 다음에 이제 train 돌리기. cmd 3 참고
+
+5) melspectorgram으로 audio로 만드는 deepvoice3의 conver(vocoder)에는 griffin-lim을 기본적으로 사용하는데 이는 품질이 좋지않게 합성하기때문에 wavenet을 학습해서 적용해보자.
+우선 음성파일들을 train, dev, eval로 나눠야하기 위해서 NB00000.0000.wav 형태의 파일들만 대상으로 하자. cmd 5를 참고하여 데이터 복사, cmd 9를 참고해서 0,1,2단계를 수행하고 학습해보기.
+ wenet 참고 (https://github.com/r9y9/wavenet_vocoder#pre-trained-models)
+
+cmd 1)
+cd /workspace/multi-speaker-tacotron-tensorflow
+python3 -m recognition.alignment --recognition_path "./datasets/son/recognition.json" --score_threshold=2 --recognition_encoding="utf-8"
+
+cmd 2)
+cd /workspace/deepvoice3_pytorch
+python preprocess.py json_meta ../multi-speaker-tacotron-tensorflow/datasets/son/alignment.json data/new_son/ --preset=presets/deepvoice3_nikls.json
+
+cmd 2-1)
+cd /workspace/deepvoice3_pytorch/data
+python son_add_label.py
+cat text1.txt text2.txt > text.txt
+
+cmd 3)
+cd /workspace/deepvoice3_pytorch
+python train.py --preset=presets/deepvoice3_son.json --data-root=data/son/ --checkpoint-dir checkpoint_son_new_jamo
+
+cmd 4)
+cat text1.txt text2.txt > text.txt
+
+cmd 5)
+find ./datasets/son/audio/ -name *.*.wav -exec cp {} /workspace/wavenet_vocoder/datasets/son/ \;
+
+cmd 5-1)
+find ./ -name '*.*.wav' |wc -l
+
+cmd 6)
+cd /mnt/tts/deepvoice3_pytorch/log/; tensorboard --logdir ./ --port 6007 --reload_interval=5
+
+cmd 7) tensorboard 용도
+ssh -L localhost:8000:localhost:6007 ubuntu@114.108.175.159
+tensorboard --logdir ./ --port 6007 --reload_interval=5
+
+cmd 8) Deepvoie3 speaker adaption
+python train.py --preset=presets/deepvoice3_new_son.json --data-root=data/with_kss_son/ --speaker-id=4 --restore-parts=checkpoint_kss_addDOT/checkpoint_step000750000.pth --checkpoint-dir checkpoint_son_adaption
+
+cmd 9)
+cd /workspace/wavenet_vocoder/egs/mulaw256 또는 egs/gaussian 또는 egs/mol
+ls run.sh    (run.sh를 실행할 것)
+./run.sh --stage 0 --stop-stage 0 --db-root ../../datasets/son
+./run.sh --stage 1 --stop-stage 1
+CUDA_VISIBLE_DEVICES="0,1" ./run.sh --stage 2 --stop-stage 2
+
+cmd 10) synthesis with wavenet vocoder.
+python synthesis.py --preset=/workspace/deepvoice3_pytorch/presets/deepvoice3_new_son.json --preset-wavenet=/workspace/wavenet_vocoder/egs/mulaw256/conf/mulaw256_wavenet.json --checkpoint-wavenet=/workspace/wavenet_vocoder/egs/mulaw256/exp/lj_train_no_dev_mulaw256_wavenet/checkpoint_latest.pth /workspace/deepvoice3_pytorch/checkpoint_new_son_adaption/checkpoint_step000700000.pth /workspace/deepvoice3_pytorch/text/ttt.txt /workspace/deepvoice3_pytorch/synthesis_output_with_kss_son/testt4
+
+cmd 10-1) synthesis with no wavenet
+python synthesis.py --preset=presets/deepvoice3_new_son.json checkpoint_son_adaption2/checkpoint_step000750000.pth ttt.txt synthesis_output_with_kss_son/testt4
+python synthesis.py --preset=presets/deepvoice3_kss.json --speaker_id=1 checkpoint_kss_new2/checkpoint_step000744344.pth text/one.txt synthesis_output_with_kss_son/testt8
+
+cmd 11) nltk.download
+python -c "import nltk; nltk.download('punkt')"
+python -c "import nltk; nltk.download('cmudict')"
+
+
+
+sox으로 sr 바꾸기
+1개만)
+sox /mnt/tts/multi-speaker-tacotron-tensorflow/datasets/son/audio/NB10732947.0026.wav -r 16000 -b 16 -c 1 test.wav
+
+여러개)
+cd /mnt/tts/son_44100
+find ./ -name "*wav" -exec sox {} -r 22050 -b 16 -c 1 ../son_22050/{} \;
