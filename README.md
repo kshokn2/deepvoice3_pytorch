@@ -19,7 +19,15 @@ python -c "import nltk; nltk.download('punkt')"
 </pre>
 </br></br>
 
-<h2>korean multispeaker synthesize</h2>
-multi speaker model
-<h3>kss</h3>
+<h2>data downloading(son) and preprocessing with json</h2>
+adjust trim
+ref: https://github.com/carpedm20/multi-speaker-tacotron-tensorflow
+</br></br>
+
+<h2>synthesize</h2>
+korean multi-speaekr and single-speaker
+<h3>kss(multi_speaker)</h3>
 https://drive.google.com/drive/folders/1tfRHz813VcnNO6pcelzKnldcAgGz3qdu?usp=sharing
+</br>
+<h3>son(single_speaker)</h3>
+https://drive.google.com/drive/folders/1qG2YQC0QHIeGDouHFlm9bI7kU2W2dtA8?usp=sharing
