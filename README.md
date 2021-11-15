@@ -20,7 +20,8 @@ python -c "import nltk; nltk.download('punkt')"
 </br></br>
 
 <h2>data downloading(son) and preprocessing with json</h2>
-adjust trim
+need to adjust trimming a silence decibel
+</br>
 ref: https://github.com/carpedm20/multi-speaker-tacotron-tensorflow
 </br></br>
 
