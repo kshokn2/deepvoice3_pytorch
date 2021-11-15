@@ -17,3 +17,9 @@ pip install docopt tensorflow-gpu==1.15.0 nnmnkwii matplotlib tensorboardX PyQt5
 python -c "import nltk; nltk.download('cmudict')"
 python -c "import nltk; nltk.download('punkt')"
 </pre>
+</br></br>
+
+<h2>korean multispeaker synthesize</h2>
+multi speaker model
+<h3>kss</h3>
+https://drive.google.com/drive/folders/1tfRHz813VcnNO6pcelzKnldcAgGz3qdu?usp=sharing
