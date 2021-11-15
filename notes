@@ -1,3 +1,5 @@
+위치: multi-speaker-tacotron-tensorflow/datasets/son/
+
 son custom dataset 사용법
 
 1) recognition.json을 확보해야됨. 구글stt로 만든 것으로 안에 텍스트들은 다 검토가 필요함(현재 210511을 기준으로 NB10861230.0053.wav 까지 1차 완료
