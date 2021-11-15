@@ -30,4 +30,5 @@ korean multi-speaekr and single-speaker
 https://drive.google.com/drive/folders/1tfRHz813VcnNO6pcelzKnldcAgGz3qdu?usp=sharing
 </br>
 <h3>son(single_speaker)</h3>
+it's kinda unstable.. :(
 https://drive.google.com/drive/folders/1qG2YQC0QHIeGDouHFlm9bI7kU2W2dtA8?usp=sharing
