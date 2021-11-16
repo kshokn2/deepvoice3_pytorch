@@ -61,11 +61,6 @@ def tts(model, text, p=0, speaker_id=None, fast=False):
         mel_outputs, linear_outputs, alignments, done = model(
             sequence, text_positions=text_positions, speaker_ids=speaker_ids)
 
-    #print(len(speaker_ids), speaker_ids[0])
-    #print(len(sequence), sequence[0])
-    #print(len(sequence[0]))
-    #print(len(linear_outputs), linear_outputs[0])
-
     linear_output = linear_outputs[0].cpu().data.numpy()
     spectrogram = audio._denormalize(linear_output)
     alignment = alignments[0].cpu().data.numpy()
@@ -145,7 +140,7 @@ if __name__ == "__main__":
             temp_t = _frontend.cleaners.korean_cleaners(temp_t)
             waveform, alignment, _, _ = tts(
                 model, text, p=replace_pronunciation_prob, speaker_id=speaker_id, fast=True)
-            waveform /= np.max(np.abs(waveform)) # add
+            #waveform /= np.max(np.abs(waveform)) # add
             dst_wav_path = join(dst_dir, "{}_{}{}.wav".format(
                 idx, checkpoint_name, file_name_suffix))
             dst_alignment_path = join(

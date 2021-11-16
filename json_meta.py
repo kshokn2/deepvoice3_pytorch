@@ -101,10 +101,13 @@ def build_from_path(in_dir, out_dir, num_workers=1, tqdm=lambda x: x):
                     text = text[-1]
                 else:
                     text = text[0]
+            '''
+            # is it necessary?
             if hparams.ignore_recognition_level > 0 and not is_aligned[audio_path]:
                 continue
             if hparams.min_text > len(text):
                 continue
+            '''
             if num_speakers == 1:
                 # Single-speaker
                 futures.append(executor.submit(
@@ -186,7 +189,11 @@ def _process_utterance(out_dir, text, wav_path, speaker_id=None):
     else:
         if hparams.process_only_htk_aligned:
             return None
-        wav, _ = librosa.effects.trim(wav, top_db=15)
+
+        # original
+        #wav, _ = librosa.effects.trim(wav, top_db=15)
+
+        wav, _ = librosa.effects.trim(wav, top_db=50)
 
     if hparams.rescaling:
         wav = wav / np.abs(wav).max() * hparams.rescaling_max
@@ -233,7 +240,13 @@ def _process_utterance_single(out_dir, text, wav_path):
     else:
         if hparams.process_only_htk_aligned:
             return None
-        wav, _ = librosa.effects.trim(wav, top_db=15)
+
+        if 'son' in wav_path and 'NB' in wav_path:
+            wav, _ = librosa.effects.trim(wav, top_db=50)
+        elif 'kss' in wav_path:
+            wav, _ = librosa.effects.trim(wav, top_db=30)
+        else:
+            wav, _ = librosa.effects.trim(wav, top_db=15)
     # End added from the multispeaker version
     
     if hparams.rescaling:

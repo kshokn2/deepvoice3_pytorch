@@ -17,6 +17,10 @@ options:
     --port=<port>                     Port.
     -h, --help               Show help message.
 """
+
+########
+# python app.py --preset=presets/your_hparam_json --speaker_id=which_speakers --port=your_port checkpoint_path
+########
 from docopt import docopt
 
 import sys
